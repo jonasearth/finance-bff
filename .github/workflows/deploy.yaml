@@ -27,6 +27,6 @@ jobs:
     - name: Create kubeconfig
       run: |
         mkdir ${HOME}/.kube
-        echo ${{ secrets.KUBE_CONFIG }} | base64 --decode > ${HOME}/.kube/config
+        ${{ secrets.KUBE_CONFIG }} | base64 --decode > ${HOME}/.kube/config
     - name: Deploy to K8s
       run: helm upgrade finance-bff ./deployment/helm --namespace personal-management
