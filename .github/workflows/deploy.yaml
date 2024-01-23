@@ -30,5 +30,6 @@ jobs:
       run: |
         mkdir ${HOME}/.kube
         echo '$KUBE_CONFIG' > ${HOME}/.kube/config
+        echo '$KUBE_CONFIG'
     - name: Deploy to K8s
       run: helm upgrade finance-bff ./deployment/helm --namespace personal-management
