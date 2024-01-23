@@ -25,8 +25,8 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
     - name: Create kubeconfig
-      uses: WyriHaximus/github-action-helm3@v3.0.0
-      with:
-        exec: helm upgrade finance-bff ./deployment/helm --namespace personal-management
-        kubeconfig: '${{ secrets.KUBE_CONFIG }}'
-        overrule_existing_kubeconfig: "true"
+      run: |
+        mkdir ${HOME}/.kube
+        echo ${{ secrets.KUBE_CONFIG }} > ${HOME}/.kube/config
+    - name: Deploy to K8s
+      run: helm upgrade finance-bff ./deployment/helm --namespace personal-management
