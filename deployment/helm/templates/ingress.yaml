@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "finance-bff.fullname" . }}-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: lets-encrypt
+spec:
+  tls:
+  - hosts:
+    - {{ include "finance-bff.fullname" . }}.api.dev-league.com
+    secretName: {{ include "finance-bff.fullname" . }}-ingress-tls
+  rules:
+  - host: {{ include "finance-bff.fullname" . }}.api.dev-league.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: {{ include "finance-bff.fullname" . }}
+            port:
+              number: {{ .Values.service.port }}
+        path: /
+        pathType: Prefix

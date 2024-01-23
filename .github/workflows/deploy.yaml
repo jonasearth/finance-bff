@@ -1,0 +1,32 @@
+name: deploy
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build-and-push:
+    name: Build and Push Image
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Build & push docker image
+      run: |
+        docker login --username ${{ secrets.DOCKER_HUB_USERNAME }} --password ${{ secrets.DOCKER_HUB_PASSWORD }}
+        docker build -t jonasearth/finance-bff:latest .
+        docker push jonasearth/finance-bff:latest
+    
+  
+  deploy:
+    name: Deploy to Kubernetes
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Create kubeconfig
+      run: |
+        mkdir ${HOME}/.kube
+        echo ${{ secrets.KUBE_CONFIG }} | base64 --decode > ${HOME}/.kube/config
+    - name: Deploy to K8s
+      run: helm upgrade finance-bff ./deployment/helm --namespace personal-management
