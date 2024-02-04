@@ -9,9 +9,9 @@ image:
   repository: docker.io/jonasearth/finance-bff
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  tag: "0.0.2"
 
-namespace: personal-management
+namespace: "dev"
 
 fullnameOverride: "finance-bff"
 
@@ -38,7 +38,7 @@ securityContext: {}
   # runAsUser: 1000
 
 service:
-  type: NodePort
+  type: ClusterIP
   port: 3000 
 
 ingress:
@@ -59,10 +59,10 @@ ingress:
 
 resources:
   limits:
-    cpu: 200m
+    cpu: 500m
     memory: 128Mi
   requests:
-    cpu: 200m
+    cpu: 300m
     memory: 128Mi
 
 autoscaling:
@@ -72,8 +72,7 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   targetMemoryUtilizationPercentage: 80
 
-nodeSelector: 
-  beta.kubernetes.io/arch: amd64
+nodeSelector: {}
 
 tolerations: []
 
@@ -82,4 +81,4 @@ affinity: {}
 env:
   values:
   - name: NODE_ENV
-    value: production
+    value: prod

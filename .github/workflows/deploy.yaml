@@ -1,20 +1,53 @@
 name: deploy
 on:
   push:
-    branches:
-      - main
+    tags:
+      - '*'
 jobs:
   build-and-push:
     name: Build and Push Image
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    - name: Build & push docker image
-      run: |
-        docker login --username ${{ secrets.DOCKER_HUB_USERNAME }} --password ${{ secrets.DOCKER_HUB_PASSWORD }}
-        docker build -t jonasearth/finance-bff:latest .
-        docker push jonasearth/finance-bff:latest
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Docker meta
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: jonasearth/finance-bff
+    - name: Login to DockerHub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+    - name: Build and push amd64
+      id: build-amd64
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: ${{ github.event_name != 'pull_request' }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        target: amd64
+        plataform: linux/amd64
+    - name: Build and push arm64
+      id: build-arm64
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: ${{ github.event_name != 'pull_request' }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        target: arm64
+        plataform: linux/arm64
+    - name: Create Manifest
+      uses: int128/docker-manifest-create-action@v2
+      id: build
+      with:
+        tags: ${{ steps.metadata.outputs.tags }}
+        sources: |
+          docker.io/${{ github.repository }}@${{ steps.build-amd64.outputs.digest }}
+          docker.io/${{ github.repository }}@${{ steps.build-arm64.outputs.digest }}
     
   
   deploy:
@@ -23,7 +56,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: Create kubeconfig
       env:
         KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}

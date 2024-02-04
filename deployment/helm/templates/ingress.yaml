@@ -7,10 +7,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - {{ include "finance-bff.fullname" . }}.api.dev-league.com
+    - {{ include "finance-bff.fullname" . }}.api.dev.dev-league.com
     secretName: {{ include "finance-bff.fullname" . }}-ingress-tls
   rules:
-  - host: {{ include "finance-bff.fullname" . }}.api.dev-league.com
+  - host: {{ include "finance-bff.fullname" . }}.api.dev.dev-league.com
     http:
       paths:
       - backend:

@@ -5,7 +5,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "finance-bff.fullname" . }}
-  namespace: personal-management
   labels:
     {{- include "finance-bff.labels" . | nindent 4 }}
 spec:
