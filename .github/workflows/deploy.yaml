@@ -29,7 +29,7 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         target: amd64
-        plataform: linux/amd64
+        platforms: linux/amd64
     - name: Build and push arm64
       id: build-arm64
       uses: docker/build-push-action@v5
@@ -39,12 +39,12 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         target: arm64
-        plataform: linux/arm64
+        platforms: linux/arm64
     - name: Create Manifest
       uses: int128/docker-manifest-create-action@v2
       id: build
       with:
-        tags: ${{ steps.metadata.outputs.tags }}
+        tags: ${{ steps.meta.outputs.tags }}
         sources: |
           docker.io/${{ github.repository }}@${{ steps.build-amd64.outputs.digest }}
           docker.io/${{ github.repository }}@${{ steps.build-arm64.outputs.digest }}
